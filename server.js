@@ -41,8 +41,16 @@ app.post("/api/chat", async (req, res) => {
       }
     );
 
-    const data = await response.json();
-    res.json({ reply: data.choices?.[0]?.message?.content || "Greška 😢" });
+const data = await response.json();
+console.log("GitHub API odgovor:", data); // 👈 dodaj ovaj redak
+
+if (data.choices && data.choices.length > 0 && data.choices[0].message?.content) {
+  res.json({ reply: data.choices[0].message.content });
+} else if (data.message) {
+  res.json({ reply: "Greška: " + data.message });
+} else {
+  res.json({ reply: "Nema odgovora 😢" });
+}
   } catch (err) {
     console.error("Greška:", err);
     res.status(500).json({ error: "Došlo je do pogreške na serveru." });
